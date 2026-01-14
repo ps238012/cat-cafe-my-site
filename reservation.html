@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ご予約｜猫カフェ</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      background-color: #faf7f2;
+      color: #333;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 24px;
+    }
+
+    form {
+      background-color: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+      margin-top: 18px;
+    }
+
+    .required {
+      color: #d66;
+      font-size: 12px;
+      margin-left: 4px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    select {
+      padding-right: 40px;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image:
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'><path fill='%23999' d='M7 10l5 5 5-5z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 14px;
+      background-color: #fff;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #777;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    .error {
+      color: #d33;
+      font-size: 12px;
+      margin-top: 6px;
+      display: none;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 28px;
+      padding: 14px;
+      font-size: 16px;
+      border: none;
+      border-radius: 999px;
+      background-color: #f2b6a0;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #eea489;
+    }
+
+    .footer-note {
+      font-size: 12px;
+      color: #666;
+      margin-top: 22px;
+      line-height: 1.6;
+    }
+
+    .complete {
+      text-align: center;
+      padding: 40px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🐾 ご予約フォーム</h1>
+
+    <form id="reservationForm">
+      <label>
+        おなまえ（カタカナ）
+        <span class="required">※必須</span>
+      </label>
+      <input type="text" required placeholder="例：ヤマダ タロウ">
+
+      <label>
+        お電話番号
+        <span class="required">※必須</span>
+      </label>
+      <input type="tel" id="phone" required placeholder="例：090-1234-5678">
+      <div class="note">入力すると自動でハイフンが入ります。</div>
+
+      <label>
+        メールアドレス
+        <span class="required">※必須</span>
+      </label>
+      <input type="email" required placeholder="example@email.com">
+      <div class="note">ご予約内容の確認メールをお送りします。</div>
+
+      <label>
+        ご来店希望日
+        <span class="required">※必須</span>
+      </label>
+      <input type="date" id="visitDate" required>
+      <div class="note">※月曜日は定休日です。</div>
+      <div class="error" id="dateError">月曜日はお選びいただけません。</div>
+
+      <label>
+        ご来店希望時間
+        <span class="required">※必須</span>
+      </label>
+      <select id="timeSelect" required>
+        <option value="">日付を選択してください</option>
+      </select>
+      <div class="note">10:00〜20:00（15分刻み）</div>
+
+      <label>
+        ご利用人数
+        <span class="required">※必須</span>
+      </label>
+      <select required>
+        <option value="">人数を選択</option>
+        <option>1名</option>
+        <option>2名</option>
+        <option>3名</option>
+        <option>4名</option>
+        <option>5名以上</option>
+      </select>
+
+      <!-- ★ ここを追加 -->
+      <label>
+        ご利用時間
+      </label>
+      <select>
+        <option value="">時間を選択</option>
+        <option>30分</option>
+        <option>60分</option>
+        <option>90分</option>
+        <option>120分</option>
+        <option>120分以上</option>
+      </select>
+
+      <label>ご要望・ご質問</label>
+      <textarea placeholder="例：はじめて利用します"></textarea>
+
+      <button type="submit">ねこたちに会いに行く🐾</button>
+
+      <div class="footer-note">
+        ※混雑状況によりご希望に添えない場合があります。
+      </div>
+    </form>
+  </div>
+
+  <script>
+    /* 電話番号自動ハイフン */
+    const phoneInput = document.getElementById("phone");
+    phoneInput.addEventListener("input", () => {
+      let v = phoneInput.value.replace(/[^0-9]/g, "");
+      if (v.length > 3 && v.length <= 7) {
+        v = v.slice(0,3) + "-" + v.slice(3);
+      } else if (v.length > 7) {
+        v = v.slice(0,3) + "-" + v.slice(3,7) + "-" + v.slice(7,11);
+      }
+      phoneInput.value = v;
+    });
+
+    const visitDate = document.getElementById("visitDate");
+    const timeSelect = document.getElementById("timeSelect");
+    const dateError = document.getElementById("dateError");
+    const form = document.getElementById("reservationForm");
+
+    visitDate.addEventListener("change", () => {
+      const day = new Date(visitDate.value).getDay();
+
+      if (day === 1) {
+        visitDate.value = "";
+        dateError.style.display = "block";
+        timeSelect.innerHTML = `<option value="">日付を選択してください</option>`;
+        return;
+      }
+
+      dateError.style.display = "none";
+      updateTimes();
+    });
+
+    function updateTimes() {
+      timeSelect.innerHTML = `<option value="">時間を選択してください</option>`;
+      const reserved = JSON.parse(localStorage.getItem("reservations") || "{}");
+
+      for (let h = 10; h <= 20; h++) {
+        for (let m = 0; m < 60; m += 15) {
+          if (h === 20 && m > 0) break;
+
+          const time = `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+          const key = `${visitDate.value}_${time}`;
+
+          if (reserved[key]) continue;
+
+          const option = document.createElement("option");
+          option.value = time;
+          option.textContent = time;
+          timeSelect.appendChild(option);
+        }
+      }
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const date = visitDate.value;
+      const time = timeSelect.value;
+      const key = `${date}_${time}`;
+
+      const reservations = JSON.parse(localStorage.getItem("reservations") || "{}");
+
+      if (reservations[key]) {
+        alert("この時間はすでに予約されています。");
+        return;
+      }
+
+      reservations[key] = true;
+      localStorage.setItem("reservations", JSON.stringify(reservations));
+
+      form.innerHTML = `
+        <div class="complete">
+          <h2>🐾 予約完了 🐾</h2>
+          <p>${date} ${time} のご予約を受け付けました。</p>
+          <p>ご来店をお待ちしております。</p>
+        </div>
+      `;
+    });
+  </script>
+</body>
+</html>

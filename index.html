@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>猫カフェ うたたね</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+
+<style>
+/* =====================
+   基本設定
+===================== */
+body {
+  margin: 0;
+  font-family: "Zen Maru Gothic", sans-serif;
+  background: #fdfaf6;
+  color: #6b5a4a;
+  font-size: 20px;
+  line-height: 1.8;
+  font-weight: 500;
+}
+
+section {
+  padding: 50px 5%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+img {
+  width: 100%;
+  display: block;
+  border-radius: 24px;
+}
+
+h2 {
+  text-align: center;
+  font-size: 40px;
+  margin-bottom: 30px;
+  color: #8c7b6c;
+  letter-spacing: 0.1em;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+/* =====================
+   ヒーロー（メイン画像）
+===================== */
+.hero {
+  width: 100%;
+  position: relative;
+  padding: 0;
+  max-width: 100%;
+  overflow: hidden;
+  max-height: 75vh; 
+}
+
+.hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+/* 「猫カフェ」の小さい文字 */
+.hero-sub {
+  position: absolute;
+  right: 22%;
+  top: 52%;
+  font-size: 24px;
+  font-weight: 900;
+  color: #6b5a3a;
+  text-shadow: 2px 2px 0 #fff;
+}
+
+/* 店名ふきだし */
+.hero-title {
+  position: absolute;
+  right: 12%;
+  top: 58%;
+  background: #ffffff;
+  color: #6b5a3a;
+  padding: 30px 50px;
+  font-size: 60px;
+  font-weight: 900;
+  border-radius: 60% 40% 50% 50% / 50% 60% 40% 60%;
+  transform: rotate(-5deg);
+  box-shadow: 4px 6px 15px rgba(0,0,0,0.1);
+}
+
+/* =====================
+   コンセプト
+===================== */
+.concept {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 900;
+  padding: 50px 5% 30px;
+  color: #8c7b6c;
+  line-height: 1.5;
+}
+
+/* =====================
+   店内写真
+===================== */
+.wide-visual {
+  padding: 0 0 40px 0;
+  max-width: 100%;
+}
+.wide-visual img {
+  border-radius: 0;
+  max-height: 500px;
+  object-fit: cover;
+}
+
+/* =====================
+   How to Enjoy (ここを修正)
+===================== */
+.enjoy-area {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* 新しいラベルコンテナ：画像の上部に配置して横並びにする */
+.enjoy-labels-top {
+  position: absolute;
+  top: 30px;          /* 画像の上端からの距離 */
+  left: 0;
+  width: 100%;        /* 横幅いっぱい */
+  display: flex;      /* 横並びにする */
+  justify-content: space-evenly; /* 均等に間隔をあける */
+  padding: 0 20px;    /* 左右に少し余白 */
+  box-sizing: border-box;
+}
+
+/* ラベル共通スタイルの変更 */
+.enjoy-label {
+  /* position: absolute; を削除し、Flexアイテムとして扱う */
+  position: static; 
+  background: rgba(111, 99, 79, 0.9); /* 少し透過させて背景となじませる */
+  color: #fff;
+  padding: 14px 0;    /* 上下の余白（左右はFlexで自動調整） */
+  border-radius: 50px;
+  font-size: 20px;
+  font-weight: 700;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  white-space: nowrap;
+  
+  /* 同じ大きさで並べるための設定 */
+  flex: 1;            /* 均等な幅を割り当てる */
+  text-align: center; /* 文字を中央揃え */
+  margin: 0 10px;     /* ラベル同士の間隔 */
+  max-width: 180px;   /* 横に広がりすぎないように制限 */
+}
+
+/* 個別の位置指定クラスは不要になったので、スタイルをリセット */
+.label-play, .label-date, .label-study, .label-food {
+  top: auto; left: auto; right: auto; bottom: auto;
+}
+
+
+.enjoy-text {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 26px;
+  font-weight: 700;
+  color: #8c7b6c;
+}
+
+/* =====================
+   店舗情報
+===================== */
+.info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+}
+
+.info-img {
+  flex: 1;
+  max-width: 450px;
+}
+.info-img img {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 32px;
+}
+
+.info-text {
+  flex: 1;
+  font-weight: 700;
+  color: #6b5a4a;
+}
+
+.info-text p {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+  border-bottom: 2px dotted #e0d0c0;
+  padding-bottom: 4px;
+  width: 100%;
+}
+
+/* =====================
+   料金表
+===================== */
+.price-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-top: 4px solid #8c7b6c;
+}
+
+th {
+  background: #7a6a5a;
+  color: white;
+  padding: 15px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+td {
+  background: #fff;
+  padding: 15px;
+  text-align: center;
+  border-bottom: 2px solid #e6ded5;
+  font-size: 20px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.price {
+  color: #d9534f;
+  font-weight: 900;
+  font-size: 32px;
+  letter-spacing: 1px;
+  line-height: 1.1;
+}
+
+.price-sub {
+  font-size: 16px;
+  color: #888;
+  font-weight: 500;
+}
+
+.drink {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 20px;
+  font-weight: 700;
+  background: #fff;
+  padding: 15px;
+  border-radius: 16px;
+  border: 2px dashed #b5a48b;
+}
+
+/* =====================
+   予約ボタン
+===================== */
+.reserve {
+  text-align: center;
+  padding-bottom: 80px;
+}
+
+.reserve-arrow {
+  font-size: 30px;
+  color: #b5a48b;
+  margin-bottom: 10px;
+  display: block;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.reserve p {
+  font-size: 22px;
+  font-weight: 900;
+  color: #8c7b6c;
+  margin-bottom: 0;
+}
+
+.reserve img {
+  display: block;
+  margin: 10px auto 0;
+  width: 320px;
+  transition: transform 0.2s;
+}
+
+.reserve img:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+/* =====================
+   スマホ対応
+===================== */
+@media (max-width: 768px) {
+  section {
+    padding: 40px 5%;
+  }
+
+  .hero-sub {
+    top: 45%;
+    right: 10%;
+  }
+
+  .hero-title {
+    font-size: 40px;
+    padding: 20px 30px;
+    right: 5%;
+    top: 52%;
+  }
+  
+  /* スマホでのラベル調整 */
+  .enjoy-labels-top {
+    top: 15px;
+    padding: 0 5px;
+  }
+  .enjoy-label {
+    padding: 10px 0;
+    font-size: 14px;
+    margin: 0 4px;
+  }
+  
+  .info {
+    flex-direction: column;
+    text-align: left;
+    gap: 20px;
+  }
+  
+  h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  
+  th, td {
+    padding: 10px 5px;
+    font-size: 16px;
+  }
+  
+  .price {
+    font-size: 22px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="hero">
+  <img src="https://ps238012.github.io/cat-cafe/main-visual.png" alt="猫カフェうたたね">
+  <div class="hero-sub">猫カフェ</div>
+  <div class="hero-title">うたたね</div>
+</div>
+
+<div class="concept">
+  猫と一緒に<br>
+  安らぐ時間を提供します
+</div>
+
+<div class="wide-visual">
+  <img src="https://ps238012.github.io/cat-cafe/third-visual.png" alt="広々とした店内">
+</div>
+
+<section>
+  <h2>How to Enjoy</h2>
+
+  <div class="enjoy-area">
+    <img src="https://ps238012.github.io/cat-cafe/second-visual.png" alt="猫カフェの楽しみ方">
+
+    <div class="enjoy-labels-top">
+      <div class="enjoy-label label-play">猫と遊ぶ</div>
+      <div class="enjoy-label label-date">デート</div>
+      <div class="enjoy-label label-study">勉強</div>
+      <div class="enjoy-label label-food">お食事</div>
+    </div>
+    </div>
+
+  <div class="enjoy-text">楽しみ方は自由 ♪</div>
+</section>
+
+<section class="info">
+  <div class="info-img">
+    <img src="https://ps238012.github.io/cat-cafe/third-visual.png" alt="店内の様子">
+  </div>
+
+  <div class="info-text">
+    <p>住所：〇〇県□□市×× 987-1</p>
+    <p>電話番号：080-XXXX-XXXX</p>
+    <p>営業時間：10:00 〜 21:00</p>
+    <p>定休日：毎週月曜日</p>
+    <p>年齢制限：3才から入場可能です。</p>
+  </div>
+</section>
+
+<section class="price-section">
+  <h2>料 金</h2>
+
+  <div class="price-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>プラン</th>
+          <th>10分あたり</th>
+          <th>最大料金</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>平日</td>
+          <td>
+            <span class="price">¥200</span><br>
+            <span class="price-sub">(税込 220円)</span>
+          </td>
+          <td>
+            <span class="price">¥2,400</span><br>
+            <span class="price-sub">(税込 2,640円)</span>
+          </td>
+        </tr>
+        <tr>
+          <td>土日祝<br>特定日</td>
+          <td>
+            <span class="price">¥250</span><br>
+            <span class="price-sub">(税込 275円)</span>
+          </td>
+          <td>
+            <span class="price">¥2,700</span><br>
+            <span class="price-sub">(税込 2,970円)</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="drink">
+      別途ドリンクバー代 <span class="price" style="font-size:28px;">¥350</span> 
+      <span style="font-size:16px;">(税込 385円) を頂戴します。</span>
+    </div>
+  </div>
+</section>
+
+<section class="reserve">
+  <p>＼ ご予約はこちらから ／</p>
+  <span class="reserve-arrow">↓</span>
+  <a href="reservation.html">
+    <img src="https://ps238012.github.io/cat-cafe/btn-reserve.png" alt="予約する">
+  </a>
+</section>
+
+</body>
+</html>
