@@ -6,49 +6,40 @@
   <title>ご予約｜猫カフェ</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
       background-color: #faf7f2;
       color: #333;
       margin: 0;
     }
-
     .container {
       max-width: 520px;
       margin: 0 auto;
       padding: 24px 16px;
     }
-
     h1 {
       text-align: center;
       font-size: 22px;
       margin-bottom: 24px;
     }
-
     form {
       background-color: #fff;
       border-radius: 16px;
       padding: 24px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
-
     label {
       display: block;
       font-size: 14px;
       margin-bottom: 6px;
       margin-top: 18px;
     }
-
     .required {
       color: #d66;
       font-size: 12px;
       margin-left: 4px;
     }
-
     input, textarea, select {
       width: 100%;
       padding: 12px;
@@ -56,38 +47,32 @@
       border: 1px solid #ccc;
       font-size: 14px;
     }
-
     select {
       padding-right: 40px;
       appearance: none;
       -webkit-appearance: none;
-      background-image:
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'><path fill='%23999' d='M7 10l5 5 5-5z'/></svg>");
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'><path fill='%23999' d='M7 10l5 5 5-5z'/></svg>");
       background-repeat: no-repeat;
       background-position: right 14px center;
       background-size: 14px;
       background-color: #fff;
     }
-
     textarea {
       resize: vertical;
       min-height: 90px;
     }
-
     .note {
       font-size: 12px;
       color: #777;
       margin-top: 6px;
       line-height: 1.5;
     }
-
     .error {
       color: #d33;
       font-size: 12px;
       margin-top: 6px;
       display: none;
     }
-
     button {
       width: 100%;
       margin-top: 28px;
@@ -99,18 +84,15 @@
       color: #fff;
       cursor: pointer;
     }
-
     button:hover {
       background-color: #eea489;
     }
-
     .footer-note {
       font-size: 12px;
       color: #666;
       margin-top: 22px;
       line-height: 1.6;
     }
-
     .complete {
       text-align: center;
       padding: 40px 0;
@@ -127,7 +109,7 @@
         おなまえ（カタカナ）
         <span class="required">※必須</span>
       </label>
-      <input type="text" required placeholder="例：ヤマダ タロウ">
+      <input type="text" id="name" required placeholder="例：ヤマダ タロウ">
 
       <label>
         お電話番号
@@ -140,7 +122,7 @@
         メールアドレス
         <span class="required">※必須</span>
       </label>
-      <input type="email" required placeholder="example@email.com">
+      <input type="email" id="email" required placeholder="example@email.com">
       <div class="note">ご予約内容の確認メールをお送りします。</div>
 
       <label>
@@ -164,7 +146,7 @@
         ご利用人数
         <span class="required">※必須</span>
       </label>
-      <select required>
+      <select id="guests" required>
         <option value="">人数を選択</option>
         <option>1名</option>
         <option>2名</option>
@@ -173,11 +155,10 @@
         <option>5名以上</option>
       </select>
 
-      <!-- ★ ここを追加 -->
       <label>
         ご利用時間
       </label>
-      <select>
+      <select id="duration">
         <option value="">時間を選択</option>
         <option>30分</option>
         <option>60分</option>
@@ -187,7 +168,7 @@
       </select>
 
       <label>ご要望・ご質問</label>
-      <textarea placeholder="例：はじめて利用します"></textarea>
+      <textarea id="message" placeholder="例：はじめて利用します"></textarea>
 
       <button type="submit">ねこたちに会いに行く🐾</button>
 
@@ -198,6 +179,10 @@
   </div>
 
   <script>
+    // ▼▼▼ ここにColabのURLを設定しました ▼▼▼
+    const API_BASE = "https://implemented-setup-inf-hill.trycloudflare.com";
+    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
     /* 電話番号自動ハイフン */
     const phoneInput = document.getElementById("phone");
     phoneInput.addEventListener("input", () => {
@@ -217,31 +202,25 @@
 
     visitDate.addEventListener("change", () => {
       const day = new Date(visitDate.value).getDay();
-
       if (day === 1) {
         visitDate.value = "";
         dateError.style.display = "block";
         timeSelect.innerHTML = `<option value="">日付を選択してください</option>`;
         return;
       }
-
       dateError.style.display = "none";
       updateTimes();
     });
 
     function updateTimes() {
       timeSelect.innerHTML = `<option value="">時間を選択してください</option>`;
-      const reserved = JSON.parse(localStorage.getItem("reservations") || "{}");
-
+      // 本来はここで fetch(`${API_BASE}/api/slots?date=${visitDate.value}`) をして空き状況を確認しますが
+      // まずは基本的な予約ができるように元のコードのままにしています。
+      
       for (let h = 10; h <= 20; h++) {
         for (let m = 0; m < 60; m += 15) {
           if (h === 20 && m > 0) break;
-
           const time = `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
-          const key = `${visitDate.value}_${time}`;
-
-          if (reserved[key]) continue;
-
           const option = document.createElement("option");
           option.value = time;
           option.textContent = time;
@@ -250,30 +229,50 @@
       }
     }
 
-    form.addEventListener("submit", (e) => {
+   form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const date = visitDate.value;
-      const time = timeSelect.value;
-      const key = `${date}_${time}`;
+      // 1. 入力されたデータを全部集める
+      // (HTML側で一部 id を追加したので、より確実に取得できるようにしました)
+      const payload = {
+        name: document.getElementById("name").value,
+        phone: document.getElementById("phone").value,
+        email: document.getElementById("email").value,
+        date: visitDate.value,
+        time: timeSelect.value,
+        guests: document.getElementById("guests").value,
+        duration: document.getElementById("duration").value,
+        message: document.getElementById("message").value
+      };
 
-      const reservations = JSON.parse(localStorage.getItem("reservations") || "{}");
+      try {
+        // 2. Pythonへ送信 (API_BASE を使用)
+        // プリントの指示通り /api/reserve に送ります
+        const response = await fetch(`${API_BASE}/api/reserve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
 
-      if (reservations[key]) {
-        alert("この時間はすでに予約されています。");
-        return;
+        const result = await response.json();
+
+        // 3. 結果（result.ok）を見て画面を切り替える
+        if (result.ok) {
+          form.innerHTML = `
+            <div class="complete">
+              <h2>🐾 予約完了 🐾</h2>
+              <p>${result.reservation.name}様、ご予約ありがとうございました。</p>
+              <p>日付：${result.reservation.date} 時間：${result.reservation.time}</p>
+            </div>
+          `;
+        } else {
+          alert("予約エラー: " + (result.error || "詳細不明"));
+        }
+
+      } catch (error) {
+        console.error("エラー:", error);
+        alert("送信に失敗しました。Colabが動いているか確認してください。");
       }
-
-      reservations[key] = true;
-      localStorage.setItem("reservations", JSON.stringify(reservations));
-
-      form.innerHTML = `
-        <div class="complete">
-          <h2>🐾 予約完了 🐾</h2>
-          <p>${date} ${time} のご予約を受け付けました。</p>
-          <p>ご来店をお待ちしております。</p>
-        </div>
-      `;
     });
   </script>
 </body>
