@@ -179,8 +179,8 @@
   </div>
 
   <script>
-    // ▼▼▼ ここにColabの新しいURLを設定してください ▼▼▼
-    const API_BASE = "https://adelaide-inches-successfully-exec.trycloudflare.com";
+    // ▼▼▼ ここを新しいURLに書き換えました！ ▼▼▼
+    const API_BASE = "https://assumption-born-sponsorship-estimates.trycloudflare.com";
     // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
     /* 電話番号自動ハイフン */
@@ -218,27 +218,23 @@
       
       dateError.style.display = "none";
       
-      // ★ここが変わったポイント：Pythonに空き時間を問い合わせる
+      // Pythonに問い合わせ
       await fetchAvailableTimes(selectedDate);
     });
 
     // 空き時間を取得する関数
     async function fetchAvailableTimes(dateStr) {
-      // 読み込み中の表示にする
       timeSelect.innerHTML = `<option>空き状況を確認中...</option>`;
-      timeSelect.disabled = true; // ユーザーが触れないようにする
+      timeSelect.disabled = true;
       timeNote.textContent = "確認中...";
 
       try {
-        // Python (/api/slots) に問い合わせ
         const res = await fetch(`${API_BASE}/api/slots?date=${dateStr}`);
         const data = await res.json();
 
-        // セレクトボックスをリセット
         timeSelect.innerHTML = `<option value="">時間を選択</option>`;
 
         if (data.slots && data.slots.length > 0) {
-          // 空き時間があれば選択肢に追加
           data.slots.forEach(time => {
             const option = document.createElement("option");
             option.value = time;
@@ -247,7 +243,6 @@
           });
           timeNote.textContent = "◎ ご希望の時間をお選びください";
         } else {
-          // 空きがない場合
           timeSelect.innerHTML = `<option value="">満席です</option>`;
           timeNote.textContent = "× 申し訳ありません、この日は満席です";
         }
@@ -257,7 +252,7 @@
         timeSelect.innerHTML = `<option value="">エラー</option>`;
         timeNote.textContent = "空き状況の取得に失敗しました。Colabを確認してください。";
       } finally {
-        timeSelect.disabled = false; // ロック解除
+        timeSelect.disabled = false;
       }
     }
 
