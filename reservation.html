@@ -179,7 +179,7 @@
   </div>
 
   <script>
-    // ▼▼▼ ここを新しいURLに書き換えました！ ▼▼▼
+    // ▼▼▼ ここはさっきのURLのままです ▼▼▼
     const API_BASE = "https://assumption-born-sponsorship-estimates.trycloudflare.com";
     // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
@@ -208,7 +208,6 @@
 
       const day = new Date(selectedDate).getDay();
 
-      // 月曜日(1)は定休日
       if (day === 1) {
         visitDate.value = "";
         dateError.style.display = "block";
@@ -217,8 +216,6 @@
       }
       
       dateError.style.display = "none";
-      
-      // Pythonに問い合わせ
       await fetchAvailableTimes(selectedDate);
     });
 
@@ -234,8 +231,9 @@
 
         timeSelect.innerHTML = `<option value="">時間を選択</option>`;
 
-        if (data.slots && data.slots.length > 0) {
-          data.slots.forEach(time => {
+        // ★ここを修正しました！ data.slots ではなく data.available を見るように変更
+        if (data.available && data.available.length > 0) {
+          data.available.forEach(time => {
             const option = document.createElement("option");
             option.value = time;
             option.textContent = time;
@@ -280,16 +278,17 @@
 
         const result = await response.json();
 
-        if (result.ok) {
-          form.innerHTML = `
+        // 予約成功時
+        if (response.ok) {
+           form.innerHTML = `
             <div class="complete">
               <h2>🐾 予約完了 🐾</h2>
-              <p>${result.reservation.name}様、ご予約ありがとうございました。</p>
-              <p>日付：${result.reservation.date} 時間：${result.reservation.time}</p>
+              <p>${document.getElementById("name").value}様、ご予約ありがとうございました。</p>
+              <p>日付：${visitDate.value} 時間：${timeSelect.value}</p>
             </div>
           `;
         } else {
-          alert("予約エラー: " + (result.error || "詳細不明"));
+          alert("予約エラー: " + (result.detail || "詳細不明"));
         }
 
       } catch (error) {
