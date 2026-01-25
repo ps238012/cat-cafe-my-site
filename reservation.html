@@ -140,7 +140,7 @@
       <select id="timeSelect" required>
         <option value="">日付を選択してください</option>
       </select>
-      <div class="note">10:00〜20:00（15分刻み）</div>
+      <div class="note" id="timeNote">日付を選ぶと空き時間が表示されます</div>
 
       <label>
         ご利用人数
@@ -179,8 +179,8 @@
   </div>
 
   <script>
-    // ▼▼▼ ここにColabのURLを設定しました ▼▼▼
-    const API_BASE = "https://posts-greensboro-contained-driven.trycloudflare.com";
+    // ▼▼▼ ここにColabの新しいURLを設定してください ▼▼▼
+    const API_BASE = "https://adelaide-inches-successfully-exec.trycloudflare.com";
     // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
     /* 電話番号自動ハイフン */
@@ -198,42 +198,73 @@
     const visitDate = document.getElementById("visitDate");
     const timeSelect = document.getElementById("timeSelect");
     const dateError = document.getElementById("dateError");
+    const timeNote = document.getElementById("timeNote");
     const form = document.getElementById("reservationForm");
 
-    visitDate.addEventListener("change", () => {
-      const day = new Date(visitDate.value).getDay();
+    // 日付が変更されたときの処理
+    visitDate.addEventListener("change", async () => {
+      const selectedDate = visitDate.value;
+      if (!selectedDate) return;
+
+      const day = new Date(selectedDate).getDay();
+
+      // 月曜日(1)は定休日
       if (day === 1) {
         visitDate.value = "";
         dateError.style.display = "block";
         timeSelect.innerHTML = `<option value="">日付を選択してください</option>`;
         return;
       }
+      
       dateError.style.display = "none";
-      updateTimes();
+      
+      // ★ここが変わったポイント：Pythonに空き時間を問い合わせる
+      await fetchAvailableTimes(selectedDate);
     });
 
-    function updateTimes() {
-      timeSelect.innerHTML = `<option value="">時間を選択してください</option>`;
-      // 本来はここで fetch(`${API_BASE}/api/slots?date=${visitDate.value}`) をして空き状況を確認しますが
-      // まずは基本的な予約ができるように元のコードのままにしています。
-      
-      for (let h = 10; h <= 20; h++) {
-        for (let m = 0; m < 60; m += 15) {
-          if (h === 20 && m > 0) break;
-          const time = `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
-          const option = document.createElement("option");
-          option.value = time;
-          option.textContent = time;
-          timeSelect.appendChild(option);
+    // 空き時間を取得する関数
+    async function fetchAvailableTimes(dateStr) {
+      // 読み込み中の表示にする
+      timeSelect.innerHTML = `<option>空き状況を確認中...</option>`;
+      timeSelect.disabled = true; // ユーザーが触れないようにする
+      timeNote.textContent = "確認中...";
+
+      try {
+        // Python (/api/slots) に問い合わせ
+        const res = await fetch(`${API_BASE}/api/slots?date=${dateStr}`);
+        const data = await res.json();
+
+        // セレクトボックスをリセット
+        timeSelect.innerHTML = `<option value="">時間を選択</option>`;
+
+        if (data.slots && data.slots.length > 0) {
+          // 空き時間があれば選択肢に追加
+          data.slots.forEach(time => {
+            const option = document.createElement("option");
+            option.value = time;
+            option.textContent = time;
+            timeSelect.appendChild(option);
+          });
+          timeNote.textContent = "◎ ご希望の時間をお選びください";
+        } else {
+          // 空きがない場合
+          timeSelect.innerHTML = `<option value="">満席です</option>`;
+          timeNote.textContent = "× 申し訳ありません、この日は満席です";
         }
+
+      } catch (error) {
+        console.error("通信エラー:", error);
+        timeSelect.innerHTML = `<option value="">エラー</option>`;
+        timeNote.textContent = "空き状況の取得に失敗しました。Colabを確認してください。";
+      } finally {
+        timeSelect.disabled = false; // ロック解除
       }
     }
 
-   form.addEventListener("submit", async (e) => {
+    // 予約送信ボタンの処理
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      // 1. 入力されたデータを全部集める
-      // (HTML側で一部 id を追加したので、より確実に取得できるようにしました)
       const payload = {
         name: document.getElementById("name").value,
         phone: document.getElementById("phone").value,
@@ -246,8 +277,6 @@
       };
 
       try {
-        // 2. Pythonへ送信 (API_BASE を使用)
-        // プリントの指示通り /api/reserve に送ります
         const response = await fetch(`${API_BASE}/api/reserve`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -256,7 +285,6 @@
 
         const result = await response.json();
 
-        // 3. 結果（result.ok）を見て画面を切り替える
         if (result.ok) {
           form.innerHTML = `
             <div class="complete">
@@ -277,28 +305,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
