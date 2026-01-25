@@ -179,8 +179,8 @@
   </div>
 
   <script>
-    // ▼▼▼ ここはさっきのURLのままです ▼▼▼
-    const API_BASE = "https://textiles-palestinian-some-mitchell.trycloudflare.com";
+    // ▼▼▼ ここを新しいURLに書き換えてください！ ▼▼▼
+    const API_BASE = "https://repository-nova-combination-issue.trycloudflare.com";
     // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
     /* 電話番号自動ハイフン */
@@ -231,7 +231,7 @@
 
         timeSelect.innerHTML = `<option value="">時間を選択</option>`;
 
-        // ★ここを修正しました！ data.slots ではなく data.available を見るように変更
+        // Colabから受け取ったリスト(30分刻み)をここで表示します
         if (data.available && data.available.length > 0) {
           data.available.forEach(time => {
             const option = document.createElement("option");
@@ -280,7 +280,7 @@
 
         // 予約成功時
         if (response.ok) {
-           form.innerHTML = `
+            form.innerHTML = `
             <div class="complete">
               <h2>🐾 予約完了 🐾</h2>
               <p>${document.getElementById("name").value}様、ご予約ありがとうございました。</p>
@@ -299,9 +299,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
